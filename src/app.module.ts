@@ -25,7 +25,6 @@ import { Profile } from './profiles/entities/profile.entity';
         database: configService.get('DB_DATABASE'),
         entities: [User, Profile],
         synchronize: true, // Solo para desarrollo
-        logging: true,
       }),
       inject: [ConfigService],
     }),
