@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateProfileDto } from './dto/create-profile.dto';
@@ -16,14 +20,19 @@ export class ProfilesService {
     private readonly usersService: UsersService,
   ) {}
 
-  async create(createProfileDto: CreateProfileDto, avatarFile?: Express.Multer.File): Promise<Profile> {
+  async create(
+    createProfileDto: CreateProfileDto,
+    avatarFile?: Express.Multer.File,
+  ): Promise<Profile> {
     const { userId, firstName, lastName } = createProfileDto;
 
     // Verificar que el usuario existe
     const user = await this.usersService.findOne(userId);
-    
+
     // Verificar que el usuario no tenga ya un perfil
-    const existingProfile = await this.profileRepository.findOne({ where: { user: { id: userId } } });
+    const existingProfile = await this.profileRepository.findOne({
+      where: { user: { id: userId } },
+    });
     if (existingProfile) {
       throw new ConflictException('El usuario ya tiene un perfil');
     }
@@ -69,13 +78,19 @@ export class ProfilesService {
     });
 
     if (!profile) {
-      throw new NotFoundException(`Perfil para el usuario con ID ${userId} no encontrado`);
+      throw new NotFoundException(
+        `Perfil para el usuario con ID ${userId} no encontrado`,
+      );
     }
 
     return profile;
   }
 
-  async update(id: number, updateProfileDto: UpdateProfileDto, avatarFile?: Express.Multer.File): Promise<Profile> {
+  async update(
+    id: number,
+    updateProfileDto: UpdateProfileDto,
+    avatarFile?: Express.Multer.File,
+  ): Promise<Profile> {
     const profile = await this.findOne(id);
 
     // Si hay un nuevo avatar, eliminar el anterior y guardar el nuevo
@@ -92,13 +107,13 @@ export class ProfilesService {
 
     // Actualizar otros campos
     Object.assign(profile, updateProfileDto);
-    
+
     return await this.profileRepository.save(profile);
   }
 
   async remove(id: number): Promise<void> {
     const profile = await this.findOne(id);
-    
+
     // Eliminar avatar si existe
     if (profile.avatar) {
       const avatarPath = path.join(process.cwd(), profile.avatar);
@@ -106,7 +121,7 @@ export class ProfilesService {
         fs.unlinkSync(avatarPath);
       }
     }
-    
+
     await this.profileRepository.remove(profile);
   }
 }

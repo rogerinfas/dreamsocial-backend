@@ -16,13 +16,19 @@ import { UsersModule } from '../users/users.module';
       storage: diskStorage({
         destination: './uploads/avatars',
         filename: (req, file, cb) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
           cb(null, `avatar-${uniqueSuffix}${extname(file.originalname)}`);
         },
       }),
       fileFilter: (req, file, cb) => {
         if (!file.originalname.match(/\.(jpg|jpeg|png|webp)$/)) {
-          return cb(new Error('Solo se permiten archivos de imagen (jpg, jpeg, png, webp)'), false);
+          return cb(
+            new Error(
+              'Solo se permiten archivos de imagen (jpg, jpeg, png, webp)',
+            ),
+            false,
+          );
         }
         cb(null, true);
       },

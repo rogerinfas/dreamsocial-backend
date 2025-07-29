@@ -41,6 +41,8 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   await app.listen(port);
   console.log(`🚀 Aplicación ejecutándose en: http://localhost:${port}`);
-  console.log(`📁 Archivos estáticos servidos desde: http://localhost:${port}/uploads/`);
+  console.log(
+    `📁 Archivos estáticos servidos desde: http://localhost:${port}/uploads/`,
+  );
 }
-bootstrap();
+void bootstrap();

@@ -11,7 +11,6 @@ import {
   HttpCode,
   UseInterceptors,
   UploadedFile,
-  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfilesService } from './profiles.service';
@@ -44,7 +43,9 @@ export class ProfilesController {
   }
 
   @Get('user/:userId')
-  async findByUserId(@Param('userId', ParseIntPipe) userId: number): Promise<Profile> {
+  async findByUserId(
+    @Param('userId', ParseIntPipe) userId: number,
+  ): Promise<Profile> {
     return await this.profilesService.findByUserId(userId);
   }
 
