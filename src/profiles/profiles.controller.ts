@@ -11,14 +11,17 @@ import {
   HttpCode,
   UseInterceptors,
   UploadedFile,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfilesService } from './profiles.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { Profile } from './entities/profile.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('profiles')
+@UseGuards(JwtAuthGuard)
 export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}
 

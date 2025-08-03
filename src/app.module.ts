@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { User } from './users/entities/user.entity';
 import { Profile } from './profiles/entities/profile.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { Profile } from './profiles/entities/profile.entity';
     }),
     UsersModule,
     ProfilesModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

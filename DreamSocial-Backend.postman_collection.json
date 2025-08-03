@@ -2,15 +2,15 @@
 	"info": {
 		"_postman_id": "dreamsocial-backend-collection",
 		"name": "DreamSocial Backend API",
-		"description": "Colección de endpoints para el backend de DreamSocial con NestJS, TypeORM y MySQL",
+		"description": "Colección de endpoints para el backend de DreamSocial con NestJS, TypeORM, MySQL y autenticación JWT",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Users",
+			"name": "Authentication",
 			"item": [
 				{
-					"name": "Crear Usuario",
+					"name": "Registrar Usuario",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -24,6 +24,95 @@
 							"raw": "{\n  \"email\": \"usuario@ejemplo.com\",\n  \"password\": \"miPassword123\"\n}"
 						},
 						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Registra un nuevo usuario y devuelve un token JWT válido por 1 día"
+					},
+					"response": []
+				},
+				{
+					"name": "Login Usuario",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Guardar el token JWT automáticamente",
+									"if (pm.response.code === 200) {",
+									"    const responseJson = pm.response.json();",
+									"    if (responseJson.access_token) {",
+									"        pm.collectionVariables.set('jwt_token', responseJson.access_token);",
+									"        console.log('Token JWT guardado automáticamente');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"usuario@ejemplo.com\",\n  \"password\": \"miPassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Autentica un usuario y devuelve un token JWT válido por 1 día. El token se guarda automáticamente."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Crear Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"usuario2@ejemplo.com\",\n  \"password\": \"miPassword123\"\n}"
+						},
+						"url": {
 							"raw": "{{base_url}}/users",
 							"host": [
 								"{{base_url}}"
@@ -32,13 +121,23 @@
 								"users"
 							]
 						},
-						"description": "Crea un nuevo usuario con email único y contraseña hasheada"
+						"description": "Crea un nuevo usuario con email único y contraseña hasheada. Requiere autenticación JWT."
 					},
 					"response": []
 				},
 				{
 					"name": "Obtener Todos los Usuarios",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -50,13 +149,23 @@
 								"users"
 							]
 						},
-						"description": "Obtiene todos los usuarios con sus perfiles asociados"
+						"description": "Obtiene todos los usuarios con sus perfiles asociados. Requiere autenticación JWT."
 					},
 					"response": []
 				},
 				{
 					"name": "Obtener Usuario por ID",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -69,13 +178,23 @@
 								"1"
 							]
 						},
-						"description": "Obtiene un usuario específico por su ID con su perfil asociado"
+						"description": "Obtiene un usuario específico por su ID con su perfil asociado. Requiere autenticación JWT."
 					},
 					"response": []
 				},
 				{
 					"name": "Actualizar Usuario",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PATCH",
 						"header": [
 							{
@@ -97,13 +216,23 @@
 								"1"
 							]
 						},
-						"description": "Actualiza los datos de un usuario existente"
+						"description": "Actualiza los datos de un usuario existente. Requiere autenticación JWT."
 					},
 					"response": []
 				},
 				{
 					"name": "Eliminar Usuario",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
@@ -116,7 +245,7 @@
 								"1"
 							]
 						},
-						"description": "Elimina un usuario y su perfil asociado"
+						"description": "Elimina un usuario y su perfil asociado. Requiere autenticación JWT."
 					},
 					"response": []
 				}
@@ -128,6 +257,16 @@
 				{
 					"name": "Crear Perfil con Avatar",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -165,13 +304,23 @@
 								"profiles"
 							]
 						},
-						"description": "Crea un perfil para un usuario con subida de avatar opcional"
+						"description": "Crea un perfil para un usuario con subida de avatar opcional. Requiere autenticación JWT."
 					},
 					"response": []
 				},
 				{
 					"name": "Crear Perfil sin Avatar",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -203,13 +352,23 @@
 								"profiles"
 							]
 						},
-						"description": "Crea un perfil para un usuario sin avatar"
+						"description": "Crea un perfil para un usuario sin avatar. Requiere autenticación JWT."
 					},
 					"response": []
 				},
 				{
 					"name": "Obtener Todos los Perfiles",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -221,13 +380,23 @@
 								"profiles"
 							]
 						},
-						"description": "Obtiene todos los perfiles con sus usuarios asociados"
+						"description": "Obtiene todos los perfiles con sus usuarios asociados. Requiere autenticación JWT."
 					},
 					"response": []
 				},
 				{
 					"name": "Obtener Perfil por ID",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -240,13 +409,23 @@
 								"1"
 							]
 						},
-						"description": "Obtiene un perfil específico por su ID"
+						"description": "Obtiene un perfil específico por su ID. Requiere autenticación JWT."
 					},
 					"response": []
 				},
 				{
 					"name": "Obtener Perfil por User ID",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -260,13 +439,23 @@
 								"1"
 							]
 						},
-						"description": "Obtiene el perfil de un usuario específico por su User ID"
+						"description": "Obtiene el perfil de un usuario específico por su User ID. Requiere autenticación JWT."
 					},
 					"response": []
 				},
 				{
 					"name": "Actualizar Perfil con Avatar",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PATCH",
 						"header": [],
 						"body": {
@@ -295,13 +484,23 @@
 								"1"
 							]
 						},
-						"description": "Actualiza un perfil existente con nuevo avatar"
+						"description": "Actualiza un perfil existente con nuevo avatar. Requiere autenticación JWT."
 					},
 					"response": []
 				},
 				{
 					"name": "Eliminar Perfil",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
@@ -314,7 +513,7 @@
 								"1"
 							]
 						},
-						"description": "Elimina un perfil y su avatar asociado"
+						"description": "Elimina un perfil y su avatar asociado. Requiere autenticación JWT."
 					},
 					"response": []
 				}
@@ -326,6 +525,12 @@
 			"key": "base_url",
 			"value": "http://localhost:3000",
 			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string",
+			"description": "Token JWT obtenido del login - se actualiza automáticamente"
 		}
 	]
 }
