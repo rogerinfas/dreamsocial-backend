@@ -18,7 +18,7 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const { email, password } = createUserDto;
+    const { email, password, role } = createUserDto;
 
     // Verificar si el email ya existe
     const existingUser = await this.userRepository.findOne({
@@ -36,6 +36,7 @@ export class UsersService {
     const user = this.userRepository.create({
       email,
       password: hashedPassword,
+      role,
     });
 
     return await this.userRepository.save(user);

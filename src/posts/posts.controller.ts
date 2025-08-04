@@ -7,10 +7,11 @@ import {
   Param,
   Delete,
   UseGuards,
-  Request,
+  Req,
   UseInterceptors,
   UploadedFile,
   ParseIntPipe,
+  ForbiddenException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -19,6 +20,9 @@ import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '../auth/enums/role.enum';
 
 @Controller('posts')
 export class PostsController {
@@ -46,7 +50,7 @@ export class PostsController {
   )
   create(
     @Body() createPostDto: CreatePostDto,
-    @Request() req,
+    @Req() req,
     @UploadedFile() imageFile?: Express.Multer.File,
   ) {
     // El authorId viene del token JWT
@@ -55,16 +59,19 @@ export class PostsController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   findAll() {
     return this.postsService.findAll();
   }
 
   @Get('user/:userId')
+  @UseGuards(JwtAuthGuard)
   findByAuthor(@Param('userId', ParseIntPipe) userId: number) {
     return this.postsService.findByAuthor(userId);
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.postsService.findOne(id);
   }
@@ -89,19 +96,30 @@ export class PostsController {
       limits: { fileSize: 5 * 1024 * 1024 }, // 5MB máximo
     }),
   )
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePostDto: UpdatePostDto,
-    @Request() req,
+    @Req() req,
     @UploadedFile() imageFile?: Express.Multer.File,
   ) {
-    return this.postsService.update(id, updatePostDto, req.user.userId, imageFile);
+    const user = req.user;
+    const post = await this.postsService.findOne(id);
+    if (user.role !== Role.ADMIN && post.author.id !== user.userId) {
+      throw new ForbiddenException('No tienes permisos para actualizar este post.');
+    }
+    return this.postsService.update(id, updatePostDto, user.userId, imageFile);
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
-  remove(@Param('id', ParseIntPipe) id: number, @Request() req) {
-    return this.postsService.remove(id, req.user.userId);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.USER)
+  async remove(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    const user = req.user;
+    const post = await this.postsService.findOne(id);
+    if (user.role !== Role.ADMIN && post.author.id !== user.userId) {
+      throw new ForbiddenException('No tienes permisos para eliminar este post.');
+    }
+    return this.postsService.remove(id, user.userId);
   }
 
   @Post(':id/like')

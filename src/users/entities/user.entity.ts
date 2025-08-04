@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Profile } from '../../profiles/entities/profile.entity';
+import { Role } from '../../auth/enums/role.enum';
 
 @Entity('users')
 export class User {
@@ -20,6 +21,13 @@ export class User {
   @Column()
   @Exclude()
   password: string;
+
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.USER,
+  })
+  role: Role;
 
   @CreateDateColumn()
   createdAt: Date;
