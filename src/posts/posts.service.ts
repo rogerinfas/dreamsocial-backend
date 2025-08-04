@@ -22,9 +22,10 @@ export class PostsService {
 
   async create(
     createPostDto: CreatePostDto,
+    authorId: number,
     imageFile?: Express.Multer.File,
   ): Promise<Post> {
-    const { authorId, content } = createPostDto;
+    const { content } = createPostDto;
 
     // Verificar que el usuario existe
     const author = await this.usersService.findOne(authorId);

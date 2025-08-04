@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsOptional, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
 
 export class CreatePostDto {
   @IsString({ message: 'El contenido debe ser una cadena de texto' })
@@ -8,8 +8,4 @@ export class CreatePostDto {
   @IsOptional()
   @IsString({ message: 'La imagen debe ser una cadena de texto' })
   image?: string;
-
-  @IsNumber({}, { message: 'El ID del autor debe ser un número' })
-  @IsNotEmpty({ message: 'El ID del autor es requerido' })
-  authorId: number;
 }

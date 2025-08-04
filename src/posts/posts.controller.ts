@@ -50,8 +50,8 @@ export class PostsController {
     @UploadedFile() imageFile?: Express.Multer.File,
   ) {
     // El authorId viene del token JWT
-    createPostDto.authorId = req.user.userId;
-    return this.postsService.create(createPostDto, imageFile);
+    const authorId = req.user.userId;
+    return this.postsService.create(createPostDto, authorId, imageFile);
   }
 
   @Get()
