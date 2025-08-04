@@ -27,10 +27,16 @@ async function bootstrap() {
     }),
   );
 
-  // Crear directorio de uploads si no existe
-  const uploadsDir = join(process.cwd(), 'uploads', 'avatars');
-  if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
+  // Crear directorios de uploads si no existen
+  const avatarsDir = join(process.cwd(), 'uploads', 'avatars');
+  const postsDir = join(process.cwd(), 'uploads', 'posts');
+  
+  if (!fs.existsSync(avatarsDir)) {
+    fs.mkdirSync(avatarsDir, { recursive: true });
+  }
+  
+  if (!fs.existsSync(postsDir)) {
+    fs.mkdirSync(postsDir, { recursive: true });
   }
 
   // Servir archivos estáticos

@@ -7,7 +7,9 @@ import { UsersModule } from './users/users.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { User } from './users/entities/user.entity';
 import { Profile } from './profiles/entities/profile.entity';
+import { Post } from './posts/entities/post.entity';
 import { AuthModule } from './auth/auth.module';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
@@ -24,7 +26,7 @@ import { AuthModule } from './auth/auth.module';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
-        entities: [User, Profile],
+        entities: [User, Profile, Post],
         synchronize: true, // Solo para desarrollo
       }),
       inject: [ConfigService],
@@ -32,6 +34,7 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     ProfilesModule,
     AuthModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
