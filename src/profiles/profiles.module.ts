@@ -39,5 +39,6 @@ import { UsersModule } from '../users/users.module';
   ],
   controllers: [ProfilesController],
   providers: [ProfilesService],
+  exports: [ProfilesService],
 })
 export class ProfilesModule {}

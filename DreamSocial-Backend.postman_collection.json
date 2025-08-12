@@ -21,7 +21,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"usuario@ejemplo.com\",\n  \"password\": \"miPassword123\"\n}"
+							"raw": "{\n  \"email\": \"usuario@ejemplo.com\",\n  \"password\": \"miPassword123\",\n  \"firstName\": \"Nuevo\",\n  \"lastName\": \"Usuario\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/register",
@@ -89,43 +89,6 @@
 			"name": "Users",
 			"item": [
 				{
-					"name": "Crear Usuario",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{jwt_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"email\": \"usuario2@ejemplo.com\",\n  \"password\": \"miPassword123\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/users",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"users"
-							]
-						},
-						"description": "Crea un nuevo usuario con email único y contraseña hasheada. Requiere autenticación JWT."
-					},
-					"response": []
-				},
-				{
 					"name": "Obtener Todos los Usuarios",
 					"request": {
 						"auth": {
@@ -149,7 +112,7 @@
 								"users"
 							]
 						},
-						"description": "Obtiene todos los usuarios con sus perfiles asociados. Requiere autenticación JWT."
+						"description": "Obtiene todos los usuarios con sus perfiles asociados. Requiere autenticación JWT. **Requiere rol de ADMIN.**"
 					},
 					"response": []
 				},
@@ -380,7 +343,7 @@
 								"profiles"
 							]
 						},
-						"description": "Obtiene todos los perfiles con sus usuarios asociados. Requiere autenticación JWT."
+						"description": "Obtiene todos los perfiles con sus usuarios asociados. Requiere autenticación JWT. **Requiere rol de ADMIN.**"
 					},
 					"response": []
 				},

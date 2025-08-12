@@ -29,14 +29,9 @@ import { Role } from '../auth/enums/role.enum';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return await this.usersService.create(createUserDto);
-  }
-
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   async findAll(): Promise<User[]> {
     return await this.usersService.findAll();
   }

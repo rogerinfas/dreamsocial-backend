@@ -41,7 +41,8 @@ export class ProfilesController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   async findAll(): Promise<Profile[]> {
     return await this.profilesService.findAll();
   }
