@@ -11,8 +11,8 @@ import { User } from '../../users/entities/user.entity';
 
 @Entity('posts')
 export class Post {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ type: 'text' })
   content: string;

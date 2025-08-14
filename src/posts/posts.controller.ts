@@ -10,7 +10,7 @@ import {
   Req,
   UseInterceptors,
   UploadedFile,
-  ParseIntPipe,
+  ParseUUIDPipe,
   ForbiddenException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -66,13 +66,13 @@ export class PostsController {
 
   @Get('user/:userId')
   @UseGuards(JwtAuthGuard)
-  findByAuthor(@Param('userId', ParseIntPipe) userId: number) {
+  findByAuthor(@Param('userId', ParseUUIDPipe) userId: string) {
     return this.postsService.findByAuthor(userId);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.postsService.findOne(id);
   }
 
@@ -97,7 +97,7 @@ export class PostsController {
     }),
   )
   async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updatePostDto: UpdatePostDto,
     @Req() req,
     @UploadedFile() imageFile?: Express.Multer.File,
@@ -113,7 +113,7 @@ export class PostsController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN, Role.USER)
-  async remove(@Param('id', ParseIntPipe) id: number, @Req() req) {
+  async remove(@Param('id', ParseUUIDPipe) id: string, @Req() req) {
     const user = req.user;
     const post = await this.postsService.findOne(id);
     if (user.role !== Role.ADMIN && post.author.id !== user.userId) {
@@ -124,13 +124,13 @@ export class PostsController {
 
   @Post(':id/like')
   @UseGuards(JwtAuthGuard)
-  likePost(@Param('id', ParseIntPipe) id: number) {
+  likePost(@Param('id', ParseUUIDPipe) id: string) {
     return this.postsService.likePost(id);
   }
 
   @Post(':id/unlike')
   @UseGuards(JwtAuthGuard)
-  unlikePost(@Param('id', ParseIntPipe) id: number) {
+  unlikePost(@Param('id', ParseUUIDPipe) id: string) {
     return this.postsService.unlikePost(id);
   }
 }

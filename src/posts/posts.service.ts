@@ -22,7 +22,7 @@ export class PostsService {
 
   async create(
     createPostDto: CreatePostDto,
-    authorId: number,
+    authorId: string,
     imageFile?: Express.Multer.File,
   ): Promise<Post> {
     const { content } = createPostDto;
@@ -51,7 +51,7 @@ export class PostsService {
     });
   }
 
-  async findOne(id: number): Promise<Post> {
+  async findOne(id: string): Promise<Post> {
     const post = await this.postRepository.findOne({
       where: { id },
       relations: ['author', 'author.profile'],
@@ -64,7 +64,7 @@ export class PostsService {
     return post;
   }
 
-  async findByAuthor(authorId: number): Promise<Post[]> {
+  async findByAuthor(authorId: string): Promise<Post[]> {
     // Verificar que el usuario existe
     await this.usersService.findOne(authorId);
 
@@ -76,9 +76,9 @@ export class PostsService {
   }
 
   async update(
-    id: number,
+    id: string,
     updatePostDto: UpdatePostDto,
-    userId: number,
+    userId: string,
     imageFile?: Express.Multer.File,
   ): Promise<Post> {
     const post = await this.findOne(id);
@@ -106,7 +106,7 @@ export class PostsService {
     return await this.postRepository.save(post);
   }
 
-  async remove(id: number, userId: number): Promise<void> {
+  async remove(id: string, userId: string): Promise<void> {
     const post = await this.findOne(id);
 
     // Verificar que el usuario es el autor del post
@@ -125,13 +125,13 @@ export class PostsService {
     await this.postRepository.remove(post);
   }
 
-  async likePost(id: number): Promise<Post> {
+  async likePost(id: string): Promise<Post> {
     const post = await this.findOne(id);
     post.likes += 1;
     return await this.postRepository.save(post);
   }
 
-  async unlikePost(id: number): Promise<Post> {
+  async unlikePost(id: string): Promise<Post> {
     const post = await this.findOne(id);
     if (post.likes > 0) {
       post.likes -= 1;

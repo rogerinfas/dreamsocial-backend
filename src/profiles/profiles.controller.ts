@@ -6,7 +6,7 @@ import {
   Patch,
   Param,
   Delete,
-  ParseIntPipe,
+  ParseUUIDPipe,
   HttpStatus,
   HttpCode,
   UseInterceptors,
@@ -49,14 +49,14 @@ export class ProfilesController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Profile> {
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Profile> {
     return await this.profilesService.findOne(id);
   }
 
   @Get('user/:userId')
   @UseGuards(JwtAuthGuard)
   async findByUserId(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Param('userId', ParseUUIDPipe) userId: string,
   ): Promise<Profile> {
     return await this.profilesService.findByUserId(userId);
   }
@@ -66,7 +66,7 @@ export class ProfilesController {
   @Roles(Role.ADMIN, Role.USER)
   @UseInterceptors(FileInterceptor('avatar'))
   async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateProfileDto: UpdateProfileDto,
     @Req() req,
     @UploadedFile() avatarFile?: Express.Multer.File,
@@ -83,7 +83,7 @@ export class ProfilesController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return await this.profilesService.remove(id);
   }
 }

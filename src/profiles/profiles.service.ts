@@ -58,7 +58,7 @@ export class ProfilesService {
     });
   }
 
-  async findOne(id: number): Promise<Profile> {
+  async findOne(id: string): Promise<Profile> {
     const profile = await this.profileRepository.findOne({
       where: { id },
       relations: ['user'],
@@ -71,7 +71,7 @@ export class ProfilesService {
     return profile;
   }
 
-  async findByUserId(userId: number): Promise<Profile> {
+  async findByUserId(userId: string): Promise<Profile> {
     const profile = await this.profileRepository.findOne({
       where: { user: { id: userId } },
       relations: ['user'],
@@ -87,7 +87,7 @@ export class ProfilesService {
   }
 
   async update(
-    id: number,
+    id: string,
     updateProfileDto: UpdateProfileDto,
     avatarFile?: Express.Multer.File,
   ): Promise<Profile> {
@@ -111,7 +111,7 @@ export class ProfilesService {
     return await this.profileRepository.save(profile);
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     const profile = await this.findOne(id);
 
     // Eliminar avatar si existe

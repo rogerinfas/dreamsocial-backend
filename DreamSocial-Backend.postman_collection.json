@@ -132,13 +132,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/users/1",
+							"raw": "{{base_url}}/users/f47ac10b-58cc-4372-a567-0e02b2c3d479",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"users",
-								"1"
+								"f47ac10b-58cc-4372-a567-0e02b2c3d479"
 							]
 						},
 						"description": "Obtiene un usuario específico por su ID con su perfil asociado. Requiere autenticación JWT."
@@ -170,13 +170,13 @@
 							"raw": "{\n  \"email\": \"nuevo_email@ejemplo.com\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/users/1",
+							"raw": "{{base_url}}/users/f47ac10b-58cc-4372-a567-0e02b2c3d479",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"users",
-								"1"
+								"f47ac10b-58cc-4372-a567-0e02b2c3d479"
 							]
 						},
 						"description": "Actualiza los datos de un usuario existente. Requiere autenticación JWT."
@@ -199,13 +199,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/users/1",
+							"raw": "{{base_url}}/users/f47ac10b-58cc-4372-a567-0e02b2c3d479",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"users",
-								"1"
+								"f47ac10b-58cc-4372-a567-0e02b2c3d479"
 							]
 						},
 						"description": "Elimina un usuario y su perfil asociado. Requiere autenticación JWT."
@@ -247,7 +247,7 @@
 								},
 								{
 									"key": "userId",
-									"value": "1",
+									"value": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
 									"type": "text"
 								},
 								{
@@ -301,7 +301,7 @@
 								},
 								{
 									"key": "userId",
-									"value": "2",
+									"value": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
 									"type": "text"
 								}
 							]
@@ -363,13 +363,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/profiles/1",
+							"raw": "{{base_url}}/profiles/f47ac10b-58cc-4372-a567-0e02b2c3d479",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"profiles",
-								"1"
+								"f47ac10b-58cc-4372-a567-0e02b2c3d479"
 							]
 						},
 						"description": "Obtiene un perfil específico por su ID. Requiere autenticación JWT."
@@ -392,14 +392,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/profiles/user/1",
+							"raw": "{{base_url}}/profiles/user/f47ac10b-58cc-4372-a567-0e02b2c3d479",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"profiles",
 								"user",
-								"1"
+								"f47ac10b-58cc-4372-a567-0e02b2c3d479"
 							]
 						},
 						"description": "Obtiene el perfil de un usuario específico por su User ID. Requiere autenticación JWT."
@@ -438,13 +438,13 @@
 							]
 						},
 						"url": {
-							"raw": "{{base_url}}/profiles/1",
+							"raw": "{{base_url}}/profiles/f47ac10b-58cc-4372-a567-0e02b2c3d479",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"profiles",
-								"1"
+								"f47ac10b-58cc-4372-a567-0e02b2c3d479"
 							]
 						},
 						"description": "Actualiza un perfil existente con nuevo avatar. Requiere autenticación JWT."
@@ -467,13 +467,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/profiles/1",
+							"raw": "{{base_url}}/profiles/f47ac10b-58cc-4372-a567-0e02b2c3d479",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"profiles",
-								"1"
+								"f47ac10b-58cc-4372-a567-0e02b2c3d479"
 							]
 						},
 						"description": "Elimina un perfil y su avatar asociado. Requiere autenticación JWT."

@@ -1,4 +1,9 @@
-import { IsNotEmpty, IsString, IsNumber, IsOptional } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsUUID,
+  IsOptional,
+} from 'class-validator';
 
 export class CreateProfileDto {
   @IsString({ message: 'El nombre debe ser una cadena de texto' })
@@ -9,9 +14,9 @@ export class CreateProfileDto {
   @IsNotEmpty({ message: 'El apellido es requerido' })
   lastName: string;
 
-  @IsNumber({}, { message: 'El ID del usuario debe ser un número' })
+  @IsUUID('4', { message: 'El ID del usuario debe ser un UUID válido' })
   @IsNotEmpty({ message: 'El ID del usuario es requerido' })
-  userId: number;
+  userId: string;
 
   @IsOptional()
   @IsString({ message: 'El avatar debe ser una cadena de texto' })
