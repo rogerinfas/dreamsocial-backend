@@ -7,11 +7,13 @@ import { PostsService } from './posts.service';
 import { PostsController } from './posts.controller';
 import { Post } from './entities/post.entity';
 import { UsersModule } from '../users/users.module';
+import { LikesModule } from '../likes/likes.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Post]),
     UsersModule,
+    LikesModule,
     MulterModule.register({
       storage: diskStorage({
         destination: './uploads/posts',

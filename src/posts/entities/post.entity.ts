@@ -5,9 +5,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { Like } from '../../likes/entities/like.entity';
 
 @Entity('posts')
 export class Post {
@@ -32,4 +34,7 @@ export class Post {
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn()
   author: User;
+
+  @OneToMany(() => Like, (like) => like.post, { cascade: true })
+  postLikes: Like[];
 }

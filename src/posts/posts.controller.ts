@@ -60,20 +60,36 @@ export class PostsController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  findAll() {
-    return this.postsService.findAll();
+  findAll(@Req() req) {
+    // Incluir información de likes para el usuario autenticado
+    return this.postsService.findAll(req.user.userId);
+  }
+
+  @Get('with-likes')
+  @UseGuards(JwtAuthGuard)
+  getPostsWithLikeInfo(@Req() req) {
+    // Endpoint específico para obtener posts con información completa de likes
+    return this.postsService.getPostsWithLikeInfo(req.user.userId);
   }
 
   @Get('user/:userId')
   @UseGuards(JwtAuthGuard)
-  findByAuthor(@Param('userId', ParseUUIDPipe) userId: string) {
-    return this.postsService.findByAuthor(userId);
+  findByAuthor(
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Req() req,
+  ) {
+    // Incluir información de likes para el usuario autenticado
+    return this.postsService.findByAuthor(userId, req.user.userId);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.postsService.findOne(id);
+  findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req,
+  ) {
+    // Incluir información de likes para el usuario autenticado
+    return this.postsService.findOne(id, req.user.userId);
   }
 
   @Patch(':id')
@@ -102,24 +118,16 @@ export class PostsController {
     @Req() req,
     @UploadedFile() imageFile?: Express.Multer.File,
   ) {
-    const user = req.user;
-    const post = await this.postsService.findOne(id);
-    if (user.role !== Role.ADMIN && post.author.id !== user.userId) {
-      throw new ForbiddenException('No tienes permisos para actualizar este post.');
-    }
-    return this.postsService.update(id, updatePostDto, user.userId, imageFile);
+    const userId = req.user.userId;
+    return await this.postsService.update(id, updatePostDto, userId, imageFile);
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.USER)
+  @UseGuards(JwtAuthGuard)
   async remove(@Param('id', ParseUUIDPipe) id: string, @Req() req) {
-    const user = req.user;
-    const post = await this.postsService.findOne(id);
-    if (user.role !== Role.ADMIN && post.author.id !== user.userId) {
-      throw new ForbiddenException('No tienes permisos para eliminar este post.');
-    }
-    return this.postsService.remove(id, user.userId);
+    const userId = req.user.userId;
+    await this.postsService.remove(id, userId);
+    return { message: 'Post eliminado exitosamente' };
   }
 
   @Post(':id/like')

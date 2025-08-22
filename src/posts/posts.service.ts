@@ -9,6 +9,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post } from './entities/post.entity';
 import { UsersService } from '../users/users.service';
+import { LikesService } from '../likes/likes.service';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -18,6 +19,7 @@ export class PostsService {
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
     private readonly usersService: UsersService,
+    private readonly likesService: LikesService,
   ) {}
 
   async create(
@@ -44,14 +46,24 @@ export class PostsService {
     return await this.postRepository.save(post);
   }
 
-  async findAll(): Promise<Post[]> {
-    return await this.postRepository.find({
+  async findAll(userId?: string): Promise<Post[]> {
+    const posts = await this.postRepository.find({
       relations: ['author', 'author.profile'],
       order: { createdAt: 'DESC' },
     });
+
+    // Si se proporciona userId, agregar información de likes
+    if (userId) {
+      for (const post of posts) {
+        const likeInfo = await this.likesService.getLikeCount(post.id, userId);
+        post.likes = likeInfo.likeCount;
+      }
+    }
+
+    return posts;
   }
 
-  async findOne(id: string): Promise<Post> {
+  async findOne(id: string, userId?: string): Promise<Post> {
     const post = await this.postRepository.findOne({
       where: { id },
       relations: ['author', 'author.profile'],
@@ -61,18 +73,49 @@ export class PostsService {
       throw new NotFoundException(`Post con ID ${id} no encontrado`);
     }
 
+    // Si se proporciona userId, agregar información de likes
+    if (userId) {
+      const likeInfo = await this.likesService.getLikeCount(post.id, userId);
+      post.likes = likeInfo.likeCount;
+    }
+
     return post;
   }
 
-  async findByAuthor(authorId: string): Promise<Post[]> {
+  async findByAuthor(authorId: string, userId?: string): Promise<Post[]> {
     // Verificar que el usuario existe
     await this.usersService.findOne(authorId);
 
-    return await this.postRepository.find({
+    const posts = await this.postRepository.find({
       where: { author: { id: authorId } },
       relations: ['author', 'author.profile'],
       order: { createdAt: 'DESC' },
     });
+
+    // Si se proporciona userId, agregar información de likes
+    if (userId) {
+      for (const post of posts) {
+        const likeInfo = await this.likesService.getLikeCount(post.id, userId);
+        post.likes = likeInfo.likeCount;
+      }
+    }
+
+    return posts;
+  }
+
+  async getPostsWithLikeInfo(userId: string): Promise<Post[]> {
+    const posts = await this.postRepository.find({
+      relations: ['author', 'author.profile'],
+      order: { createdAt: 'DESC' },
+    });
+
+    // Agregar información de likes para cada post
+    for (const post of posts) {
+      const likeInfo = await this.likesService.getLikeCount(post.id, userId);
+      post.likes = likeInfo.likeCount;
+    }
+
+    return posts;
   }
 
   async update(
@@ -100,8 +143,10 @@ export class PostsService {
       post.image = `uploads/posts/${imageFile.filename}`;
     }
 
-    // Actualizar otros campos
-    Object.assign(post, updatePostDto);
+    // Actualizar contenido si se proporciona
+    if (updatePostDto.content) {
+      post.content = updatePostDto.content;
+    }
 
     return await this.postRepository.save(post);
   }
@@ -123,19 +168,5 @@ export class PostsService {
     }
 
     await this.postRepository.remove(post);
-  }
-
-  async likePost(id: string): Promise<Post> {
-    const post = await this.findOne(id);
-    post.likes += 1;
-    return await this.postRepository.save(post);
-  }
-
-  async unlikePost(id: string): Promise<Post> {
-    const post = await this.findOne(id);
-    if (post.likes > 0) {
-      post.likes -= 1;
-    }
-    return await this.postRepository.save(post);
   }
 }
