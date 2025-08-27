@@ -501,3 +501,4 @@ const usePostLikes = (postId) => {
 El sistema de likes mejorado de DreamSocial representa una implementación robusta y escalable que sigue las mejores prácticas de NestJS. Con su arquitectura modular, sistema de permisos granular y API intuitiva, proporciona una base sólida para la funcionalidad de engagement social.
 
 La integración perfecta con el sistema de posts existente y la gestión automática de contadores asegura una experiencia de usuario fluida y consistente, mientras que las validaciones de seguridad y el manejo de errores garantizan la integridad del sistema.
+
