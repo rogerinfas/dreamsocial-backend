@@ -21,11 +21,6 @@ import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { Role } from '../auth/enums/role.enum';
-// Swagger decorators (opcional si no tienes @nestjs/swagger instalado)
-// import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('posts')
 export class PostsController {
@@ -77,11 +72,7 @@ export class PostsController {
 
   @Get('feed')
   @UseGuards(JwtAuthGuard)
-  // @ApiOperation({ summary: 'Obtener feed personalizado (posts de usuarios seguidos + propios)' })
-  // @ApiResponse({
-  //   status: 200,
-  //   description: 'Feed personalizado del usuario',
-  // })
+  // 'Obtener feed personalizado (posts de usuarios seguidos + propios)' })
   getPersonalFeed(
     @Req() req,
     @Query('page') page: number = 1,
