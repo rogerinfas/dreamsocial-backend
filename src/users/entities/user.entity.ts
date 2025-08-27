@@ -12,6 +12,7 @@ import { Profile } from '../../profiles/entities/profile.entity';
 import { Role } from '../../auth/enums/role.enum';
 import { Like } from '../../likes/entities/like.entity';
 import { Post } from '../../posts/entities/post.entity';
+import { Follow } from '../../follows/entities/follow.entity';
 
 @Entity('users')
 export class User {
@@ -46,4 +47,11 @@ export class User {
 
   @OneToMany(() => Like, (like) => like.user, { cascade: true })
   likes: Like[];
+
+  // Relaciones de seguimiento
+  @OneToMany(() => Follow, (follow) => follow.follower, { cascade: true })
+  following: Follow[]; // Usuarios que este usuario sigue
+
+  @OneToMany(() => Follow, (follow) => follow.following, { cascade: true })
+  followers: Follow[]; // Usuarios que siguen a este usuario
 }

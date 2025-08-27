@@ -12,6 +12,7 @@ import {
   UploadedFile,
   ParseUUIDPipe,
   ForbiddenException,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -23,6 +24,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '../auth/enums/role.enum';
+// Swagger decorators (opcional si no tienes @nestjs/swagger instalado)
+// import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('posts')
 export class PostsController {
@@ -70,6 +73,21 @@ export class PostsController {
   getPostsWithLikeInfo(@Req() req) {
     // Endpoint específico para obtener posts con información completa de likes
     return this.postsService.getPostsWithLikeInfo(req.user.userId);
+  }
+
+  @Get('feed')
+  @UseGuards(JwtAuthGuard)
+  // @ApiOperation({ summary: 'Obtener feed personalizado (posts de usuarios seguidos + propios)' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'Feed personalizado del usuario',
+  // })
+  getPersonalFeed(
+    @Req() req,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 20,
+  ) {
+    return this.postsService.getPersonalFeed(req.user.userId, page, limit);
   }
 
   @Get('user/:userId')
@@ -130,15 +148,17 @@ export class PostsController {
     return { message: 'Post eliminado exitosamente' };
   }
 
-  @Post(':id/like')
-  @UseGuards(JwtAuthGuard)
-  likePost(@Param('id', ParseUUIDPipe) id: string) {
-    return this.postsService.likePost(id);
-  }
+  // Nota: Los métodos like/unlike están en el servicio de likes
+  // Para usar likes, usa los endpoints de /likes
+  // @Post(':id/like')
+  // @UseGuards(JwtAuthGuard)
+  // likePost(@Param('id', ParseUUIDPipe) id: string) {
+  //   return this.postsService.likePost(id);
+  // }
 
-  @Post(':id/unlike')
-  @UseGuards(JwtAuthGuard)
-  unlikePost(@Param('id', ParseUUIDPipe) id: string) {
-    return this.postsService.unlikePost(id);
-  }
+  // @Post(':id/unlike')
+  // @UseGuards(JwtAuthGuard)
+  // unlikePost(@Param('id', ParseUUIDPipe) id: string) {
+  //   return this.postsService.unlikePost(id);
+  // }
 }

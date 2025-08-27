@@ -35,6 +35,17 @@ A continuación se detallan los permisos para los roles `USER` y `ADMIN` en la a
 | | `GET /likes/:id` | ✅ | ✅ | Requiere autenticación. Obtener like específico. |
 | | `PATCH /likes/:id` | ✅ (Solo propios) | ✅ | Usuario solo puede modificar sus propios likes. |
 | | `DELETE /likes/id/:id` | ✅ (Solo propios) | ✅ | Usuario solo puede eliminar sus propios likes. |
+| **Follows** | `POST /follows` | ✅ | ✅ | Requiere autenticación. Seguir a un usuario. |
+| | `POST /follows/toggle/:userId` | ✅ | ✅ | Requiere autenticación. Alternar seguimiento (seguir/dejar de seguir). |
+| | `DELETE /follows/:userId` | ✅ | ✅ | Requiere autenticación. Dejar de seguir a un usuario. |
+| | `GET /follows/stats/:userId` | ✅ | ✅ | Requiere autenticación. Estadísticas de seguimiento. |
+| | `GET /follows/followers/:userId` | ✅ | ✅ | Requiere autenticación. Lista de seguidores de un usuario. |
+| | `GET /follows/following/:userId` | ✅ | ✅ | Requiere autenticación. Lista de usuarios seguidos por un usuario. |
+| | `GET /follows/suggested` | ✅ | ✅ | Requiere autenticación. Usuarios sugeridos para seguir. |
+| | `GET /follows/check/:userId` | ✅ | ✅ | Requiere autenticación. Verificar si sigues a un usuario. |
+| | `GET /follows` | ❌ | ✅ | Solo administradores. Listar todas las relaciones de seguimiento. |
+| | `DELETE /follows/admin/:id` | ❌ | ✅ | Solo administradores. Eliminar relación de seguimiento por ID. |
+| **Posts** | `GET /posts/feed` | ✅ | ✅ | Requiere autenticación. Feed personalizado (posts de usuarios seguidos + propios). |
 
 ## 🔐 Notas de Seguridad del Sistema de Likes
 

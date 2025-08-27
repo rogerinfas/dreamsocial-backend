@@ -4,12 +4,13 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post } from './entities/post.entity';
 import { UsersService } from '../users/users.service';
 import { LikesService } from '../likes/likes.service';
+import { Follow } from '../follows/entities/follow.entity';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -18,6 +19,8 @@ export class PostsService {
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
+    @InjectRepository(Follow)
+    private readonly followRepository: Repository<Follow>,
     private readonly usersService: UsersService,
     private readonly likesService: LikesService,
   ) {}
@@ -116,6 +119,49 @@ export class PostsService {
     }
 
     return posts;
+  }
+
+  /**
+   * Obtener feed personalizado del usuario (posts de usuarios seguidos + posts propios)
+   */
+  async getPersonalFeed(userId: string, page: number = 1, limit: number = 20) {
+    const skip = (page - 1) * limit;
+
+    // Obtener IDs de usuarios que sigue el usuario actual
+    const followingQuery = this.followRepository
+      .createQueryBuilder('follow')
+      .select('follow.following.id')
+      .where('follow.follower.id = :userId', { userId });
+
+    // Obtener posts de usuarios seguidos + posts propios
+    const [posts, total] = await this.postRepository.findAndCount({
+      where: [
+        { author: { id: userId } }, // Posts propios
+        { author: { id: In(followingQuery.getQuery()) } }, // Posts de usuarios seguidos
+      ],
+      relations: ['author', 'author.profile', 'postLikes'],
+      skip,
+      take: limit,
+      order: { createdAt: 'DESC' },
+    });
+
+    // Incluir información de likes para el usuario actual
+    const postsWithLikeInfo = posts.map((post) => {
+      const hasLiked = post.postLikes.some((like) => like.user.id === userId);
+      return {
+        ...post,
+        hasLiked,
+        likesCount: post.postLikes.length,
+      };
+    });
+
+    return {
+      posts: postsWithLikeInfo,
+      total,
+      page,
+      limit,
+      hasMore: total > page * limit,
+    };
   }
 
   async update(

@@ -6,12 +6,13 @@ import { extname } from 'path';
 import { PostsService } from './posts.service';
 import { PostsController } from './posts.controller';
 import { Post } from './entities/post.entity';
+import { Follow } from '../follows/entities/follow.entity';
 import { UsersModule } from '../users/users.module';
 import { LikesModule } from '../likes/likes.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Post]),
+    TypeOrmModule.forFeature([Post, Follow]),
     UsersModule,
     LikesModule,
     MulterModule.register({

@@ -9,9 +9,11 @@ import { User } from './users/entities/user.entity';
 import { Profile } from './profiles/entities/profile.entity';
 import { Post } from './posts/entities/post.entity';
 import { Like } from './likes/entities/like.entity';
+import { Follow } from './follows/entities/follow.entity';
 import { AuthModule } from './auth/auth.module';
 import { PostsModule } from './posts/posts.module';
 import { LikesModule } from './likes/likes.module';
+import { FollowsModule } from './follows/follows.module';
 
 @Module({
   imports: [
@@ -28,7 +30,7 @@ import { LikesModule } from './likes/likes.module';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
-        entities: [User, Profile, Post, Like],
+        entities: [User, Profile, Post, Like, Follow],
         synchronize: true, // Solo para desarrollo
       }),
       inject: [ConfigService],
@@ -38,6 +40,7 @@ import { LikesModule } from './likes/likes.module';
     AuthModule,
     PostsModule,
     LikesModule,
+    FollowsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
