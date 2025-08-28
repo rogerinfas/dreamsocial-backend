@@ -133,11 +133,15 @@ export class PostsService {
       .select('follow.following.id')
       .where('follow.follower.id = :userId', { userId });
 
+    // Obtener IDs de usuarios que sigue el usuario actual
+    const followingIds = await followingQuery.getRawMany();
+    const followingIdArray = followingIds.map(item => item.following_id);
+
     // Obtener posts de usuarios seguidos + posts propios
     const [posts, total] = await this.postRepository.findAndCount({
       where: [
         { author: { id: userId } }, // Posts propios
-        { author: { id: In(followingQuery.getQuery()) } }, // Posts de usuarios seguidos
+        { author: { id: In(followingIdArray) } }, // Posts de usuarios seguidos
       ],
       relations: ['author', 'author.profile', 'postLikes'],
       skip,

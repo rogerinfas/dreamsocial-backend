@@ -5,11 +5,11 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Not, In } from 'typeorm';
 import { Follow } from './entities/follow.entity';
 import { User } from '../users/entities/user.entity';
 import { CreateFollowDto } from './dto/create-follow.dto';
-import { FollowResponseDto, FollowStatsDto, FollowListResponseDto } from './dto/follow-response.dto';
+import { FollowResponseDto, FollowStatsDto, FollowListResponseDto, FollowListWithUsersResponseDto, FollowWithUserDto } from './dto/follow-response.dto';
 import { FollowQueryDto } from './dto/follow-query.dto';
 
 @Injectable()
@@ -142,8 +142,8 @@ export class FollowsService {
     userId: string,
     query: FollowQueryDto,
     currentUserId?: string,
-  ): Promise<FollowListResponseDto> {
-    const { page, limit } = query;
+  ): Promise<FollowListWithUsersResponseDto> {
+    const { page = 1, limit = 20 } = query;
     const skip = (page - 1) * limit;
 
     const [follows, total] = await this.followRepository.findAndCount({
@@ -155,10 +155,20 @@ export class FollowsService {
     });
 
     const users = follows.map((follow) => ({
-      id: follow.follower.id,
-      email: follow.follower.email,
-      profile: follow.follower.profile,
-      followedAt: follow.createdAt,
+      id: follow.id,
+      followerId: follow.follower.id,
+      followingId: follow.following.id,
+      createdAt: follow.createdAt,
+      follower: {
+        id: follow.follower.id,
+        email: follow.follower.email,
+        profile: follow.follower.profile,
+      },
+      following: {
+        id: follow.following.id,
+        email: follow.following.email,
+        profile: follow.following.profile,
+      },
     }));
 
     return {
@@ -176,8 +186,8 @@ export class FollowsService {
     userId: string,
     query: FollowQueryDto,
     currentUserId?: string,
-  ): Promise<FollowListResponseDto> {
-    const { page, limit } = query;
+  ): Promise<FollowListWithUsersResponseDto> {
+    const { page = 1, limit = 20 } = query;
     const skip = (page - 1) * limit;
 
     const [follows, total] = await this.followRepository.findAndCount({
@@ -189,10 +199,20 @@ export class FollowsService {
     });
 
     const users = follows.map((follow) => ({
-      id: follow.following.id,
-      email: follow.following.email,
-      profile: follow.following.profile,
-      followedAt: follow.createdAt,
+      id: follow.id,
+      followerId: follow.follower.id,
+      followingId: follow.following.id,
+      createdAt: follow.createdAt,
+      follower: {
+        id: follow.follower.id,
+        email: follow.follower.email,
+        profile: follow.follower.profile,
+      },
+      following: {
+        id: follow.following.id,
+        email: follow.following.email,
+        profile: follow.following.profile,
+      },
     }));
 
     return {
@@ -223,19 +243,23 @@ export class FollowsService {
   async getSuggestedUsers(
     currentUserId: string,
     query: FollowQueryDto,
-  ): Promise<FollowListResponseDto> {
-    const { page, limit } = query;
+  ): Promise<FollowListWithUsersResponseDto> {
+    const { page = 1, limit = 20 } = query;
     const skip = (page - 1) * limit;
 
-    // Subquery para obtener IDs de usuarios que ya sigues
-    const followingSubquery = this.followRepository
+    // Obtener IDs de usuarios que ya sigues
+    const followingIds = await this.followRepository
       .createQueryBuilder('follow')
       .select('follow.following.id')
-      .where('follow.follower.id = :currentUserId', { currentUserId });
+      .where('follow.follower.id = :currentUserId', { currentUserId })
+      .getRawMany();
 
+    const followingIdSet = new Set(followingIds.map(item => item.following_id));
+
+    // Obtener usuarios que no sigues (excluyendo al usuario actual y a los que ya sigues)
     const [users, total] = await this.userRepository.findAndCount({
       where: {
-        id: currentUserId, // Excluir al usuario actual
+        id: Not(In([currentUserId, ...Array.from(followingIdSet)])),
       },
       relations: ['profile'],
       skip,
@@ -243,18 +267,24 @@ export class FollowsService {
       order: { createdAt: 'DESC' },
     });
 
-    // Filtrar usuarios que no sigues
-    const suggestedUsers = users.filter(
-      (user) => user.id !== currentUserId,
-    );
-
     return {
-      users: suggestedUsers.map((user) => ({
-        id: user.id,
-        email: user.email,
-        profile: user.profile,
+      users: users.map((user) => ({
+        id: `suggested-${user.id}`, // ID único para usuarios sugeridos
+        followerId: currentUserId,
+        followingId: user.id,
+        createdAt: new Date(),
+        follower: {
+          id: currentUserId,
+          email: '', // No necesitamos el email del follower aquí
+          profile: null, // No necesitamos el profile del follower aquí
+        },
+        following: {
+          id: user.id,
+          email: user.email,
+          profile: user.profile,
+        },
       })),
-      total: suggestedUsers.length,
+      total,
       page,
       limit,
     };
