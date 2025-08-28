@@ -13,7 +13,6 @@ import {
   ParseUUIDPipe,
   ForbiddenException,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { FollowsService } from './follows.service';
 import { CreateFollowDto } from './dto/create-follow.dto';
 import { FollowQueryDto } from './dto/follow-query.dto';
@@ -23,24 +22,13 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '../auth/enums/role.enum';
 
-@ApiTags('follows')
 @Controller('follows')
 @UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
 export class FollowsController {
   constructor(private readonly followsService: FollowsService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Seguir a un usuario' })
-  @ApiResponse({
-    status: 201,
-    description: 'Usuario seguido exitosamente',
-    type: FollowResponseDto,
-  })
-  @ApiResponse({ status: 400, description: 'Datos inválidos' })
-  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
-  @ApiResponse({ status: 409, description: 'Ya sigues a este usuario' })
   async create(
     @Body() createFollowDto: CreateFollowDto,
     @Req() req,
@@ -50,18 +38,6 @@ export class FollowsController {
 
   @Post('toggle/:userId')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Alternar entre seguir y dejar de seguir' })
-  @ApiResponse({
-    status: 200,
-    description: 'Estado del seguimiento actualizado',
-    schema: {
-      type: 'object',
-      properties: {
-        isFollowing: { type: 'boolean' },
-      },
-    },
-  })
-  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
   async toggleFollow(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Req() req,
@@ -71,9 +47,6 @@ export class FollowsController {
 
   @Delete(':userId')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Dejar de seguir a un usuario' })
-  @ApiResponse({ status: 204, description: 'Dejaste de seguir al usuario' })
-  @ApiResponse({ status: 404, description: 'No sigues a este usuario' })
   async unfollow(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Req() req,
@@ -83,13 +56,6 @@ export class FollowsController {
 
   @Get('stats/:userId')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Obtener estadísticas de seguimiento de un usuario' })
-  @ApiResponse({
-    status: 200,
-    description: 'Estadísticas de seguimiento',
-    type: FollowStatsDto,
-  })
-  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
   async getFollowStats(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Req() req,
@@ -99,13 +65,6 @@ export class FollowsController {
 
   @Get('followers/:userId')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Obtener lista de seguidores de un usuario' })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de seguidores',
-    type: FollowListResponseDto,
-  })
-  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
   async getFollowers(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Query() query: FollowQueryDto,
@@ -116,13 +75,6 @@ export class FollowsController {
 
   @Get('following/:userId')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Obtener lista de usuarios que sigue un usuario' })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de usuarios seguidos',
-    type: FollowListResponseDto,
-  })
-  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
   async getFollowing(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Query() query: FollowQueryDto,
@@ -133,12 +85,6 @@ export class FollowsController {
 
   @Get('suggested')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Obtener usuarios sugeridos para seguir' })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de usuarios sugeridos',
-    type: FollowListResponseDto,
-  })
   async getSuggestedUsers(
     @Query() query: FollowQueryDto,
     @Req() req,
@@ -148,17 +94,6 @@ export class FollowsController {
 
   @Get('check/:userId')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Verificar si sigues a un usuario' })
-  @ApiResponse({
-    status: 200,
-    description: 'Estado del seguimiento',
-    schema: {
-      type: 'object',
-      properties: {
-        isFollowing: { type: 'boolean' },
-      },
-    },
-  })
   async isFollowing(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Req() req,
@@ -171,12 +106,6 @@ export class FollowsController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
-  @ApiOperation({ summary: 'Obtener todas las relaciones de seguimiento (Solo Admin)' })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de todas las relaciones de seguimiento',
-    type: [FollowResponseDto],
-  })
   async findAll(): Promise<FollowResponseDto[]> {
     return await this.followsService.findAll();
   }
@@ -185,9 +114,6 @@ export class FollowsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
-  @ApiOperation({ summary: 'Eliminar relación de seguimiento por ID (Solo Admin)' })
-  @ApiResponse({ status: 204, description: 'Relación eliminada exitosamente' })
-  @ApiResponse({ status: 404, description: 'Relación no encontrada' })
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.followsService.remove(id);
   }
